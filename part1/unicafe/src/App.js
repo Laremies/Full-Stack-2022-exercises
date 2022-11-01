@@ -7,7 +7,7 @@ const Button = (props) => (
 const StatisticLine = (props) => (
     <table>
         <colgroup>
-            <col style={{width: '54px'}}></col>
+            <col style={{width: '54px'}}/>
         </colgroup>
         <tbody>
         <tr>
