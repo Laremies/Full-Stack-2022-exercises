@@ -1,1 +1,1 @@
-Exercises 1.1-1.5
+Exercise to display course information in different ways.
