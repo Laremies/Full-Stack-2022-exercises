@@ -4,8 +4,7 @@ import axios from 'axios'
 const Weather = ({ country }) => {
     const capital = country.capital
     const apiKey = process.env.REACT_APP_API_KEY
-    console.log(apiKey)
-    console.log(apiKey)
+
 
     const [temperature, setTemperature] = useState()
     const [icon, setIcon] = useState()
