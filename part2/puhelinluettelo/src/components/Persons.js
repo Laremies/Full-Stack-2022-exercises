@@ -4,7 +4,7 @@ const Persons = ({ persons, filter }) => {
             <table>
                 <tbody>
                 {persons.filter(person => 
-                    person.name.toLowerCase().includes(filter)).map(person =>
+                    person.name.toLowerCase().includes(filter.toLowerCase())).map(person =>
                     <tr key={person.name}>
                         <td>{person.name}</td>
                         <td>{person.number}</td>
