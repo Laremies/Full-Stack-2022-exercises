@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
-import axios from 'axios'
+import personService from './services/persons'
+
 
 const App = () => {
   const [persons, setPersons] = useState([]) 
@@ -11,10 +12,10 @@ const App = () => {
   const [filter, setFilter] = useState('')
 
 useEffect(() => {
-  axios
-    .get('http://localhost:3001/persons')
-    .then(response => {
-      setPersons(response.data)
+  personService
+    .getAll()
+    .then(initialPersons => {
+      setPersons(initialPersons)
     })
   }, [])
 
@@ -26,9 +27,17 @@ const addPerson = (e) => {
   }
 
   if (persons.map(p => p.name).includes(newName)) {
-    window.alert(`${newName} is already added to phonebook`)
+    if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
+          const person = persons.filter(p => p.name === newName)
+          personService.update(person[0].id, personObject)
+          personService
+            .getAll()
+            .then(updated => setPersons(updated))
+        }
   } else {
-    setPersons(persons.concat(personObject))
+    personService
+      .create(personObject)
+      .then(returnedPerson => setPersons(persons.concat(returnedPerson)))
   }
   setNewName('')
   setNewNumber('')
@@ -46,6 +55,13 @@ const handleFilter = (e) => {
   setFilter(e.target.value)
 }
 
+const handleDelete = (p) => {
+  if (window.confirm(`Delete ${p.name}?`)) {
+    personService.deletePerson(p.id)
+    setPersons(persons.filter(person => person.name !== p.name))
+  }
+}
+
   return (
     <div>
       <h2>Phonebook</h2>
@@ -56,7 +72,7 @@ const handleFilter = (e) => {
         numberValue={newNumber} onNumberChange={handleNumberChange}
       />
       <h3>Numbers</h3>
-      <Persons persons={persons} filter={filter}/>
+      <Persons persons={persons} filter={filter} handleDelete={handleDelete}/>
     </div>
   )
 
