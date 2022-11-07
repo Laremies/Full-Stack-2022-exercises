@@ -3,6 +3,7 @@ import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
 import personService from './services/persons'
+import Notification from './components/Notification'
 
 
 const App = () => {
@@ -10,6 +11,8 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
+  const [message, setMessage] = useState(null)
+  const [error, setError] = useState(false)
 
 useEffect(() => {
   personService
@@ -29,18 +32,27 @@ const addPerson = (e) => {
   if (persons.map(p => p.name).includes(newName)) {
     if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
           const person = persons.filter(p => p.name === newName)
-          personService.update(person[0].id, personObject)
           personService
-            .getAll()
-            .then(updated => setPersons(updated))
+            .update(person[0].id, personObject).then(() => {
+              personService.getAll().then(updated => setPersons(updated))
+              setMessage(`Changed number to ${newNumber}`)
+            })
+            .catch(() => {
+              setError(true)
+              setMessage(`Information of ${newName} has already been removed from server`)
+            })
         }
   } else {
     personService
       .create(personObject)
       .then(returnedPerson => setPersons(persons.concat(returnedPerson)))
+    
+      setMessage(`Added ${newName}`)
   }
   setNewName('')
   setNewNumber('')
+  setTimeout(() => {setMessage(null)}, 3000)
+  setError(false)
 }
 
 const handleNameChange = (e) => {
@@ -59,12 +71,15 @@ const handleDelete = (p) => {
   if (window.confirm(`Delete ${p.name}?`)) {
     personService.deletePerson(p.id)
     setPersons(persons.filter(person => person.name !== p.name))
+    setMessage(`Deleted ${p.name}`)
+    setTimeout(() => {setMessage(null)}, 5000)
   }
 }
 
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message} error={error} />
       <Filter value={filter} onChange={handleFilter}/>
       <h3>Add a new</h3>
       <PersonForm onSubmit={addPerson} 
@@ -75,7 +90,6 @@ const handleDelete = (p) => {
       <Persons persons={persons} filter={filter} handleDelete={handleDelete}/>
     </div>
   )
-
 }
 
 export default App;
