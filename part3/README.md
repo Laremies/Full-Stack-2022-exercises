@@ -1,0 +1,1 @@
+exercises 3.1-3.6 done @ [puhelinluettelo-backend](https://github.com/Laremies/puhelinluettelo-backend)
