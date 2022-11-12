@@ -35,6 +35,7 @@ const addPerson = (e) => {
           personService
             .update(person[0].id, personObject).then(() => {
               personService.getAll().then(updated => setPersons(updated))
+              setError(false)
               setMessage(`Changed number to ${newNumber}`)
             })
             .catch(() => {
@@ -47,12 +48,17 @@ const addPerson = (e) => {
       .create(personObject)
       .then(returnedPerson => setPersons(persons.concat(returnedPerson)))
     
+    if (personObject.name && personObject.number) {
+      setError(false)
       setMessage(`Added ${newName}`)
+    } else {
+      setError(true)
+      setMessage(`Give a name and a number`)
+    }
   }
   setNewName('')
   setNewNumber('')
   setTimeout(() => {setMessage(null)}, 3000)
-  setError(false)
 }
 
 const handleNameChange = (e) => {
@@ -71,6 +77,7 @@ const handleDelete = (p) => {
   if (window.confirm(`Delete ${p.name}?`)) {
     personService.deletePerson(p.id)
     setPersons(persons.filter(person => person.name !== p.name))
+    setError(false)
     setMessage(`Deleted ${p.name}`)
     setTimeout(() => {setMessage(null)}, 5000)
   }
