@@ -40,25 +40,26 @@ const addPerson = (e) => {
             })
             .catch(() => {
               setError(true)
-              setMessage(`Information of ${newName} has already been removed from server`)
+              setMessage(error.response.data.error)
             })
         }
   } else {
     personService
       .create(personObject)
-      .then(returnedPerson => setPersons(persons.concat(returnedPerson)))
+      .then(returnedPerson => {
+        setPersons(persons.concat(returnedPerson))
+        setError(false)
+        setMessage(`Added ${newName}`)
+      })
+      .catch(error => {
+        setError(true)
+        setMessage(error.response.data.error)
+      })
     
-    if (personObject.name && personObject.number) {
-      setError(false)
-      setMessage(`Added ${newName}`)
-    } else {
-      setError(true)
-      setMessage(`Give a name and a number`)
-    }
   }
   setNewName('')
   setNewNumber('')
-  setTimeout(() => {setMessage(null)}, 3000)
+  setTimeout(() => {setMessage(null)}, 5000)
 }
 
 const handleNameChange = (e) => {
