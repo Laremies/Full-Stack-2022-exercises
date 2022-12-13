@@ -8,6 +8,7 @@ const LoginForm = ({ onSumbit, nameValue, passwordValue, onNameChange, onPasswor
                 value={nameValue}
                 name="Username"
                 onChange={onNameChange}
+                id='username'
                 />
             </div>
             <div>
@@ -17,6 +18,7 @@ const LoginForm = ({ onSumbit, nameValue, passwordValue, onNameChange, onPasswor
                 value={passwordValue}
                 name="Password"
                 onChange={onPasswordChange}
+                id='password'
                 />
             </div>
             <button type="submit">login</button>

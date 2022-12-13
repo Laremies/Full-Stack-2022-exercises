@@ -5,9 +5,9 @@ module.exports = {
         "jest/globals": true,
         "cypress/globals": true
     },
-    "extends": [
-        "eslint:recommend",
-        "plugin:react/recommend"
+    "extends": [ 
+        "eslint:recommended",
+        "plugin:react/recommended"
     ],
     "parserOptions": {
         "ecmaFeatures": {
@@ -17,14 +17,24 @@ module.exports = {
         "sourceType": "module"
     },
     "plugins": [
-        "react", "jest", "cypress"
+        "react", "jest"
     ],
     "rules": {
-        "quotes": [
-            "error",
-            "single"
-        ],
-        "eqeqeq": "error"
+        "eqeqeq": "error",
+      "no-trailing-spaces": "error",
+      "object-curly-spacing": [
+          "error", "always"
+      ],
+      "arrow-spacing": [
+          "error", { "before": true, "after": true }
+      ],
+      "no-console": 0,
+      "react/prop-types": 0,
+      "react/react-in-jsx-scope": "off"
+  },
+  "settings": {
+    "react": {
+      "version": "detect"
     }
-
+  }
 }

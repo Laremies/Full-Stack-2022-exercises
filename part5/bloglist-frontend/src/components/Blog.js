@@ -37,7 +37,7 @@ const Blog = ({blog, upvote, user, remove}) => {
                       <button onClick={handleDelete}>delete</button> : null
 
   return (
-    <div style={blogStyle}>
+    <div className='blog' style={blogStyle}>
       <p>
         {blog.title} {blog.author} <button onClick={handleVisibility}>hide</button><br/>
         {blog.url}<br/>
