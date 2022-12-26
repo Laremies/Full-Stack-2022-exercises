@@ -1,0 +1,1 @@
+Anecdoteapp now with different pages.
