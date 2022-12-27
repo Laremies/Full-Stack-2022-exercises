@@ -12,3 +12,4 @@ TO-DO: functionaly for creating/deleting an account
 - Express
 - Axios
 - Database with MongoDB
+- React Bootstrap

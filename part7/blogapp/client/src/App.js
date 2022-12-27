@@ -1,27 +1,22 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
+import { Routes, Route, useMatch } from 'react-router-dom'
+import { Button } from 'react-bootstrap'
 
-import Blog from './components/Blog'
 import LoginForm from './components/LoginForm'
-import NewBlogForm from './components/NewBlogForm'
+import Menu from './components/Menu'
 import Notification from './components/Notification'
-import Togglable from './components/Togglable'
+import BlogList from './components/BlogList'
+import UserList from './components/UserList'
+import User from './components/User'
 
-import blogService from './services/blogs'
 import loginService from './services/login'
 import userService from './services/user'
+import usersService from './services/users'
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
+  const [users, setUsers] = useState([])
   const [notification, setNotification] = useState(null)
-  const blogFormRef = useRef()
-  const byLikes = (b1, b2) => b2.likes>b1.likes ? 1 : -1
-
-  useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs( blogs.sort(byLikes) )
-    )
-  }, [])
 
   useEffect(() => {
     const userFromStorage = userService.getUser()
@@ -30,6 +25,13 @@ const App = () => {
     }
   }, [])
 
+  useEffect(() => {
+    usersService.getAll().then(users =>
+      setUsers(users)
+      )
+  }, [])
+
+  
   const login = async (username, password) => {
     loginService.login({
       username, password,
@@ -38,9 +40,10 @@ const App = () => {
       userService.setUser(user)
       notify(`${user.name} logged in!`)
     }).catch(() => {
-      notify('wrong username/password', 'alert')
+      notify('wrong username/password', 'danger')
     })
   }
+
 
   const logout = () => {
     setUser(null)
@@ -48,92 +51,46 @@ const App = () => {
     notify('Goodbye!')
   }
 
-  const createBlog = async (blog) => {
-    blogService.create(blog).then(createdBlog => {
-      notify(`A new blog '${createdBlog.title}' by ${createdBlog.author} added.`)
-      setBlogs(blogs.concat(createdBlog))
-      blogFormRef.current.toggleVisibility()
-    }).catch(error => {
-      notify('Creating a blog failed: ' + error.response.data.error, 'alert')
-    })
-  }
 
-  const removeBlog = (id) => {
-    const toRemove = blogs.find(b => b.id === id)
-
-    const ok = window.confirm(`Remove '${toRemove.title}' by ${toRemove.author}?`)
-
-    if (!ok) {
-      return
-    }
-
-    blogService.remove(id).then(() => {
-      const updatedBlogs = blogs
-        .filter(b => b.id!==id)
-        .sort(byLikes)
-      setBlogs(updatedBlogs)
-    })
-  }
-
-  const likeBlog = async (id) => {
-    const toLike = blogs.find(b => b.id === id)
-    const liked = {
-      ...toLike,
-      likes: (toLike.likes||0) + 1,
-      user: toLike.user.id
-    }
-
-    blogService.update(liked.id, liked).then(updatedBlog => {
-      notify(`You liked '${updatedBlog.title}' by ${updatedBlog.author}.`)
-      const updatedBlogs = blogs
-        .map(b => b.id===id ? updatedBlog : b)
-        .sort(byLikes)
-      setBlogs(updatedBlogs)
-    })
-  }
-
-  const notify = (message, type='info') => {
+  const notify = (message, type='success') => {
     setNotification({ message, type })
     setTimeout(() => {
       setNotification(null)
     }, 5000)
   }
 
+
+  const match = useMatch('/users/:id')
+  const chosenUser = match
+    ? users.find(user => user.id === match.params.id)
+    : null
+
   if (user === null) {
-    return <>
+    return <div className='container'>
       <Notification notification={notification} />
       <LoginForm onLogin={login} />
-    </>
+    </div>
   }
 
   return (
-    <div>
+    <div className='container'>
       <h2>Blogs</h2>
-
       <Notification notification={notification} />
-
-      <div>
+      <div style={{ marginBottom: 15 }}>
         {user.name} logged in
-        <button onClick={logout}>logout</button>
+        <Button style={{ marginLeft: 10 }}
+                variant='outline-secondary'
+                size='sm' onClick={logout}
+                >
+          logout
+        </Button>
       </div>
-
-      <Togglable buttonLabel='new blog' ref={blogFormRef}>
-        <NewBlogForm
-          onCreate={createBlog}
-        />
-      </Togglable>
-
-      <div id='blogs'>
-        {blogs.map(blog =>
-          <Blog
-            key={blog.id}
-            blog={blog}
-            likeBlog={likeBlog}
-            removeBlog={removeBlog}
-            user={user}
-          />
-        )}
-      </div>
+      <Menu />
+      <Routes>
+        <Route path='/' element={<BlogList user={user} notify={notify} />} />
+        <Route path='/users' element={<UserList users={users} />} />
+        <Route path='/users/:id' element={<User user={chosenUser} />} />
+      </Routes>
     </div>
   )
 }

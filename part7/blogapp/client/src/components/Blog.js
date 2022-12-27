@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import PropTypes from 'prop-types'
+import { Button } from 'react-bootstrap'
 
 const BlogDetails = ({ blog, visible, likeBlog, removeBlog, own }) => {
   if (!visible) return null
@@ -12,12 +13,15 @@ const BlogDetails = ({ blog, visible, likeBlog, removeBlog, own }) => {
         <a href={blog.url}>{blog.url}</a>
       </div>
       <div>
-        {blog.likes} likes <button onClick={() => likeBlog(blog.id)}>like</button>
+        {blog.likes} likes <Button variant='outline-primary' size='sm' onClick={() => likeBlog(blog.id)}>like</Button>
       </div>
       {addedBy}
-      {own&&<button onClick={() => removeBlog(blog.id)}>
-        remove
-      </button>}
+      <>
+        <br />
+        {own&&<Button variant='outline-danger' size='sm' onClick={() => removeBlog(blog.id)}>
+          remove
+        </Button>}
+      </>
     </div>
   )
 }
@@ -26,7 +30,7 @@ const Blog = ({ blog, likeBlog, removeBlog, user }) => {
   const [visible, setVisible] = useState(false)
 
   const style = {
-    padding: 3,
+    padding: 10,
     margin: 5,
     borderStyle: 'solid',
     borderWidth: 1,
@@ -35,9 +39,9 @@ const Blog = ({ blog, likeBlog, removeBlog, user }) => {
   return (
     <div style={style} className='blog'>
       {blog.title} by {blog.author}
-      <button onClick={() => setVisible(!visible)}>
+      <Button variant='outline-secondary' size='sm' onClick={() => setVisible(!visible)} style={{ float: 'right'}}>
         {visible ? 'hide' : 'view'}
-      </button>
+      </Button>
       <BlogDetails
         blog={blog}
         visible={visible}
